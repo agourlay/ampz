@@ -1,9 +1,9 @@
 Japanese bitmap glyphs derived from Noto Sans CJK JP Regular, 16 pixels.
-Copyright 2010-2012, Google Corporation.
+© 2014-2021 Adobe (http://www.adobe.com/).
 https://github.com/notofonts/noto-cjk
 
 Color emoji glyphs derived from Noto Color Emoji.
-Copyright 2013-2017 Google Inc. and Arjen Nienhuis.
+Copyright 2022 Google Inc.
 https://github.com/googlefonts/noto-emoji
 
 -----------------------------------------------------------
