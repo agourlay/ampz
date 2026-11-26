@@ -1,15 +1,18 @@
 # ampz
 
-[![CI status](https://github.com/agourlay/ampz/actions/workflows/ci.yml/badge.svg)](https://github.com/agourlay/ampz/actions/workflows/ci.yml)
-[![Linux releases](https://img.shields.io/badge/releases-Linux-377A68)](https://github.com/agourlay/ampz/releases)
-[![Zig 0.17.1](https://img.shields.io/badge/Zig-0.17.1-F7A41D)](#build-from-source)
-[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
-
 <p align="center">
   <img src="src/assets/playhead.svg" width="224" height="224" alt="Playhead, the ampz logo: a peach A with a play button cutout">
 </p>
 
-ampz is a Linux MP3 player written from scratch in Zig. It scans a music folder and its subfolders, lets you browse by artist and album, and plays the filtered tracks in order.
+<p align="center">
+  <a href="https://github.com/agourlay/ampz/actions/workflows/ci.yml"><img src="https://github.com/agourlay/ampz/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="https://github.com/agourlay/ampz/releases"><img src="https://img.shields.io/badge/releases-Linux-377A68" alt="Linux releases"></a>
+  <a href="#build-from-source"><img src="https://img.shields.io/badge/Zig-0.17.1-F7A41D" alt="Zig 0.17.1"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License: Apache-2.0"></a>
+  <img src="https://img.shields.io/badge/%E2%9C%A8-AI%20generated-7057a3" alt="AI generated">
+</p>
+
+ampz is a Linux MP3 player written from scratch in Zig with zero third-party dependencies. It scans a music folder and its subfolders, lets you browse by artist and album, and plays the filtered tracks in order.
 
 ## Download and play
 
@@ -28,8 +31,6 @@ Start the player from the extracted directory.
 ```
 
 ![ampz showing the search bar, artist and album filters, track list, and playback controls](ampz.png)
-
-ampz is an AI-generated project. ✨
 
 ## Library and controls
 
