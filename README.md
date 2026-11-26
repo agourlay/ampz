@@ -5,107 +5,80 @@
 [![Zig 0.17.1](https://img.shields.io/badge/Zig-0.17.1-F7A41D)](#build-from-source)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
-<img src="src/assets/playhead.svg" width="224" height="224" alt="Playhead, the ampz logo: a peach A with a play button cutout">
+<p align="center">
+  <img src="src/assets/playhead.svg" width="224" height="224" alt="Playhead, the ampz logo: a peach A with a play button cutout">
+</p>
 
-A small, native Linux MP3 player written in Zig. Point it at a music folder to browse by artist and album, select tracks, and play them in order.
+ampz is a Linux MP3 player written from scratch in Zig. It scans a music folder and its subfolders, lets you browse by artist and album, and plays the filtered tracks in order.
 
 ## Download and play
 
-Prebuilt Linux binaries run without installing Zig. You’ll need an X11 or XWayland desktop and either PulseAudio or PipeWire with PulseAudio support.
+Choose the Linux archive matching `uname -m` (`x86_64` or `aarch64`) from [GitHub Releases](https://github.com/agourlay/ampz/releases). You’ll need X11 or XWayland and either PulseAudio or PipeWire’s PulseAudio service.
 
-1. Run `uname -m` to find your architecture. From [GitHub Releases](https://github.com/agourlay/ampz/releases), download `ampz-x86_64-linux.tar.gz` for `x86_64` or `ampz-aarch64-linux.tar.gz` for `aarch64`. These archives will appear with the first release.
-2. In the directory containing the download, extract the archive.
+Extract the download with `tar`.
 
-   ```sh
-   tar -xzf "ampz-$(uname -m)-linux.tar.gz"
-   ```
+```sh
+tar -xzf "ampz-$(uname -m)-linux.tar.gz"
+```
 
-3. Open a terminal in the extracted folder and start the player with your music directory.
+Start the player from the extracted directory.
 
-   ```sh
-   ./ampz "$HOME/Music"
-   ```
+```sh
+./ampz "$HOME/Music"
+```
 
-You can also save the folder and launch ampz without an argument.
+![ampz showing the search bar, artist and album filters, track list, and playback controls](ampz.png)
+
+ampz is an AI-generated project. ✨
+
+## Library and controls
+
+ampz reads ID3v1 and ID3v2 tags. For untagged files, it takes the artist, album, and title from `Artist/Album/Title.mp3`. Each credited ID3v2.4 artist is searchable. Track names support Japanese text and color emoji.
+
+Search narrows the current artist and album selection as you type. Words can match different fields in any order. For example, `quartet live` can match “City Quartet” in the artist field and “Live Sessions” in the album field. Search also covers titles and relative paths. ASCII letters match regardless of case.
+
+| Action | Control |
+| --- | --- |
+| Search | Ctrl+F or / |
+| Paste into search | Ctrl+V |
+| Leave search | Down or Tab to browse results, Escape to clear |
+| Select a track | Up, Down, Page Up, Page Down |
+| Play | Enter or double-click a track |
+| Pause or resume | Space |
+| Previous or next track | Transport arrows |
+| Seek | Click the progress bar or press Left or Right to skip five seconds |
+| Quit | Q or Escape outside search |
+
+The decoder supports mono and stereo MPEG-1, MPEG-2, and MPEG-2.5 Layer III at indexed constant or variable bitrates. Free-format MP3s are unsupported.
+
+## Configuration
+
+Save your preferred folder once, then start ampz without an argument.
 
 ```sh
 ./ampz --set-music-dir "$HOME/Music"
 ./ampz
 ```
 
-![ampz playing a track in the dark library view with search, artist and album filters, and playback controls](ampz.png)
-
-ampz is an AI-generated project. ✨
+ampz stores `music_folder` in `$XDG_CONFIG_HOME/ampz/config.json`. If `XDG_CONFIG_HOME` is empty, unset, or relative, it uses `~/.config/ampz/config.json`. Relative paths in the JSON resolve from the config file’s directory. A command-line folder takes precedence over `AMPZ_MUSIC_DIR`, which takes precedence over the saved folder. [Example config](config.json)
 
 ## Build from source
 
-With Zig 0.17.1, run this from the project directory.
+Zig 0.17.1 builds ampz offline with zero third-party dependencies. The executable is written to `zig-out/bin/ampz`.
 
 ```sh
-zig build run -- "$HOME/Music"
-```
-
-To build the executable on its own, run `zig build`. You’ll find it at `zig-out/bin/ampz`. The MP3 decoder, library browser, and desktop protocol clients are implemented in Zig. The build uses only the Zig standard library and works offline.
-
-## Configuration
-
-ampz saves preferences in `$XDG_CONFIG_HOME/ampz/config.json`, falling back to `$HOME/.config/ampz/config.json` when `XDG_CONFIG_HOME` is unset, empty, or relative. The save command accepts a relative or absolute folder and records its absolute path. You can also edit the file directly. [Example config](config.json)
-
-```json
-{
-  "music_folder": "/home/me/Music"
-}
-```
-
-A folder argument overrides `AMPZ_MUSIC_DIR`, which overrides the saved preference. Both overrides apply only to that launch. A relative folder in the JSON file is resolved from the directory containing the file.
-
-## Library and controls
-
-ampz scans the folder and its subfolders on launch. It reads title, artist, album, disc, and track numbers from common ID3v1 and ID3v2 tags. For untagged music, an `Artist/Album/Title.mp3` folder layout supplies the display names. For tracks with multiple ID3v2.4 artist credits, each artist appears in the browser and can be found by search. Music files are opened read-only.
-
-Titles, artist names, and album names use bundled Japanese glyphs and color emoji, including flags, skin tones, and joined sequences such as 👩🏽‍🎤. ASCII emoticons such as `:-)` display as written. ampz reads Unicode ID3v2 tags and UTF-8 filenames. The title bar shows the track name during playback and while paused. Window managers that display application icons show the Playhead logo beside it.
-
-The top search bar filters tracks as you type, within the selected artist and album. Each word can match part of the title, artist, album, or relative file path, in any order. For example, `quartet live` can match an artist named “City Quartet” and an album named “Live Sessions”. ASCII letters match regardless of case.
-
-| Action | Control |
-| --- | --- |
-| Focus the search bar | Click the field, press Ctrl+F, or press / |
-| Paste into search | Ctrl+V |
-| Leave search | Down or Tab to browse results, Enter to play a match, Escape to clear and leave |
-| Filter the track list | Click an artist or album |
-| Move through tracks | Up, Down, Page Up, Page Down |
-| Play a selected track | Enter or double-click |
-| Pause or resume | Space or the center transport button |
-| Previous or next track | Transport arrows |
-| Seek | Click the progress bar, or use Left and Right for five-second steps |
-| Change volume | Click the volume slider |
-| Scroll a pane | Mouse wheel over that pane |
-| Quit | Q, Escape, or close the window |
-
-Playback supports mono and stereo MPEG-1, MPEG-2, and MPEG-2.5 Layer III with indexed constant or variable bitrates. Free-format streams are unsupported. ampz holds the current compressed track and its frame index in memory, and decodes PCM as the sound server requests it.
-
-## Tests
-
-```sh
+zig build
 zig build test
 ```
 
-The tests use short, generated tone recordings. They cover folder discovery, filtering, MPEG-2 intensity stereo, encoder-delay trimming on CRC-protected files, trailing artwork, and unsynchronised ID3 text. Reference PCM samples were measured with FFmpeg. The tests run without a display or audio device.
-
-## Format references
-
-The Huffman codebooks, scalefactor band boundaries, and synthesis window are numerical constants of the MPEG audio format. The decoder stores the codebooks as binary trees. The standardized values were cross-checked against the published encoder and synthesis tables. [MPEG audio specification](https://csclub.uwaterloo.ca/~pbarfuss/ISO11172-3.pdf) · [Huffman codes](https://github.com/lameproject/lame/blob/master/libmp3lame/tables.c) · [Scalefactor bands](https://github.com/lameproject/lame/blob/master/libmp3lame/quantize_pvt.c) · [Synthesis coefficients](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/mpegaudiodsp_data.c)
-
 ## Credits
 
-Thank you to the Quod Libet team for the artist-and-album browser that inspired ampz, and to the Zig contributors for the compiler and standard library. [Quod Libet](https://quodlibet.readthedocs.io/) · [Zig](https://ziglang.org/)
+Thanks to [Quod Libet](https://quodlibet.readthedocs.io/) for the browser design, [Zig](https://ziglang.org/) for the toolchain, and [X.Org](https://www.x.org/), [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/), and [PipeWire](https://pipewire.org/) for the desktop and audio services.
 
-LAME helped us generate test recordings. FFmpeg gave us an independent decoder to check the output sample by sample. The minimp3 source helped us understand intensity stereo, and Mutagen helped us verify tagged files. [LAME](https://lame.sourceforge.io/) · [FFmpeg](https://ffmpeg.org/) · [minimp3](https://github.com/lieff/minimp3) · [Mutagen](https://mutagen.readthedocs.io/)
+[LAME](https://lame.sourceforge.io/) and [FFmpeg](https://ffmpeg.org/) provided test recordings and reference PCM. [minimp3](https://github.com/lieff/minimp3) helped with intensity stereo, and [Mutagen](https://mutagen.readthedocs.io/) with tag verification. Decoder references include the [MPEG audio specification](https://csclub.uwaterloo.ca/~pbarfuss/ISO11172-3.pdf), LAME’s [Huffman codes](https://github.com/lameproject/lame/blob/master/libmp3lame/tables.c) and [scalefactor bands](https://github.com/lameproject/lame/blob/master/libmp3lame/quantize_pvt.c), and FFmpeg’s [synthesis coefficients](https://github.com/FFmpeg/FFmpeg/blob/master/libavcodec/mpegaudiodsp_data.c).
 
-We also thank the X.Org, PulseAudio, and PipeWire contributors for the display and sound services ampz uses on Linux. [X.Org](https://www.x.org/) · [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) · [PipeWire](https://pipewire.org/)
-
-The bundled glyphs come from Noto Sans CJK JP and Noto Color Emoji. The Unicode Consortium supplies the emoji sequence data. [Noto CJK](https://github.com/notofonts/noto-cjk) · [Noto Emoji](https://github.com/googlefonts/noto-emoji) · [Licenses](src/fonts/LICENSE.txt)
+[Noto Sans CJK JP](https://github.com/notofonts/noto-cjk) and [Noto Color Emoji](https://github.com/googlefonts/noto-emoji) supply the glyphs. The Unicode Consortium supplies the emoji sequences.
 
 ## License
 
-The original ampz code is licensed under the [Apache License 2.0](LICENSE). The bundled fonts and Unicode data carry their own [third-party notices](src/fonts/LICENSE.txt).
+ampz’s original code uses the [Apache License 2.0](LICENSE). The fonts and Unicode data have separate [third-party notices](src/fonts/LICENSE.txt).
