@@ -1,0 +1,8 @@
+.{
+    .name = .ampz,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.17.1",
+    .fingerprint = 0x7d3ef6dd18b2ef24,
+    .dependencies = .{},
+    .paths = .{ "build.zig", "build.zig.zon", "README.md", "LICENSE", "ampz.png", "config.json", "src" },
+}

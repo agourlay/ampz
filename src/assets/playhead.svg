@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <title>Playhead</title>
+  <rect width="64" height="64" rx="14" fill="#242c2b"/>
+  <path fill="#ffab85" fill-rule="evenodd" d="M7 52 26 12h12l19 40H44l-3.5-8h-17L20 52z M28 24v13l11-6.5z"/>
+</svg>
