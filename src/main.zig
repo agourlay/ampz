@@ -9,6 +9,7 @@ const ui = @import("ui.zig");
 const usage =
     \\Usage: ampz [MUSIC_FOLDER]
     \\       ampz --set-music-dir MUSIC_FOLDER
+    \\       ampz --license
     \\
     \\Open a folder and its subfolders as an MP3 library.
     \\Save a preferred folder with --set-music-dir. A folder argument overrides
@@ -18,6 +19,11 @@ const usage =
 pub fn main(init: std.process.Init) !void {
     const alloc = init.arena.allocator();
     const args = try init.minimal.args.toSlice(alloc);
+    if (args.len == 2 and std.mem.eql(u8, args[1], "--license")) {
+        var out = std.Io.File.stdout().writer(init.io, &.{});
+        try out.interface.writeAll(@embedFile("LICENSE").* ++ "\n" ++ @embedFile("fonts/LICENSE.txt").*);
+        return;
+    }
     if (args.len == 2 and (std.mem.eql(u8, args[1], "--help") or std.mem.eql(u8, args[1], "-h"))) {
         var out = std.Io.File.stdout().writer(init.io, &.{});
         try out.interface.writeAll(usage);

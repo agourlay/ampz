@@ -16,17 +16,13 @@ ampz is a Linux MP3 player written from scratch in Zig with zero third-party dep
 
 ## Download and play
 
-Choose the Linux archive matching `uname -m` (`x86_64` or `aarch64`) from [GitHub Releases](https://github.com/agourlay/ampz/releases). You’ll need X11 or XWayland and either PulseAudio or PipeWire’s PulseAudio service.
+Download the Linux binary matching `uname -m` (`x86_64` or `aarch64`) from [GitHub Releases](https://github.com/agourlay/ampz/releases). You’ll need X11 or XWayland and either PulseAudio or PipeWire’s PulseAudio service.
 
-Extract the download with `tar`.
-
-```sh
-tar -xzf "ampz-$(uname -m)-linux.tar.gz"
-```
-
-Start the player from the extracted directory.
+From the download directory, make the player executable and start it with your music folder.
 
 ```sh
+mv "ampz-$(uname -m)-linux" ampz
+chmod +x ampz
 ./ampz "$HOME/Music"
 ```
 
@@ -82,4 +78,4 @@ Thanks to [Quod Libet](https://quodlibet.readthedocs.io/) for the browser design
 
 ## License
 
-ampz’s original code uses the [Apache License 2.0](LICENSE). The fonts and Unicode data have separate [third-party notices](src/fonts/LICENSE.txt).
+Run `./ampz --license` to read the licenses included in the binary. ampz’s original code uses the [Apache License 2.0](LICENSE). The fonts and Unicode data have separate [third-party notices](src/fonts/LICENSE.txt).
