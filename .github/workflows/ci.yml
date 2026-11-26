@@ -2,9 +2,13 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches-ignore: ['release/v*']  # The release workflow runs CI on the requested tag.
   pull_request:
   workflow_call:
+    inputs:
+      source:
+        type: string
+        required: false
 
 permissions:
   contents: read
@@ -14,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.source }}
       - uses: xyzzylabs/setup-zig@c0fdcf100ed8a4e5619d2bf55fae0bf0dab9ba0a # v1.0.7
         with:
           version: 0.17.1

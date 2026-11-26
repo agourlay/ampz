@@ -3,21 +3,62 @@ name: Release
 on:
   push:
     tags: ['v*']
+    branches: ['release/v*']
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to build
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
+  target:
+    if: ${{ !github.event.deleted }}
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.target.outputs.tag }}
+      source: ${{ steps.commit.outputs.source }}
+    steps:
+      - name: Select release tag
+        id: target
+        env:
+          REQUESTED_TAG: ${{ inputs.tag || github.event.release.tag_name || github.ref_name }}
+        run: |
+          tag="${REQUESTED_TAG#release/}"
+          [[ "$tag" == v* && "$tag" != */* ]]
+          git check-ref-format "refs/tags/$tag"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: refs/tags/${{ steps.target.outputs.tag }}
+      - id: commit
+        run: echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
   check:
+    needs: target
     uses: ./.github/workflows/ci.yml
+    with:
+      source: ${{ needs.target.outputs.source }}
 
   release:
-    needs: check
+    needs: [target, check]
+    concurrency:
+      group: publish-${{ needs.target.outputs.tag }}
+      cancel-in-progress: false
+    env:
+      RELEASE_TAG: ${{ needs.target.outputs.tag }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ needs.target.outputs.source }}
       - uses: xyzzylabs/setup-zig@c0fdcf100ed8a4e5619d2bf55fae0bf0dab9ba0a # v1.0.7
         with:
           version: 0.17.1
@@ -27,7 +68,7 @@ jobs:
           for arch in x86_64 aarch64; do
             pkg="ampz-$arch-linux"
             zig build "-Dtarget=$arch-linux-musl" -Dcpu=baseline --prefix "$RUNNER_TEMP/$pkg"
-            folder="ampz-${GITHUB_REF_NAME}-$arch-linux"
+            folder="ampz-${RELEASE_TAG}-$arch-linux"
             mkdir -p "$RUNNER_TEMP/package/$folder"
             cp "$RUNNER_TEMP/$pkg/bin/ampz" "$RUNNER_TEMP/package/$folder/"
             cp --parents README.md LICENSE ampz.png src/assets/playhead.svg config.json src/fonts/LICENSE.txt "$RUNNER_TEMP/package/$folder/"
@@ -37,4 +78,10 @@ jobs:
       - name: Publish GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes dist/*
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null; then
+            gh release upload "$RELEASE_TAG" dist/* --clobber
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --generate-notes dist/*
+          fi
+          gh release view "$RELEASE_TAG" --json url,assets --jq '{url, assets: [.assets[].name]}'
